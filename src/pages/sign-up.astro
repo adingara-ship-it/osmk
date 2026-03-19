@@ -110,10 +110,11 @@ const navLinks = [
       <form
         class="signup-form"
         method="post"
-        action="#"
+        action="/api/sign-up"
         enctype="multipart/form-data"
         data-reveal="up"
         style="--reveal-delay: 180ms;"
+        data-signup-form
       >
         <div class="signup-form__header">
           <p class="signup-form__kicker" data-signup-form-title>Model application</p>
@@ -336,7 +337,10 @@ const navLinks = [
           <button class="signup-form__submit" type="submit" data-signup-submit>
             submit application
           </button>
+          <p class="signup-form__hint">total upload size: 3.5 MB max</p>
         </div>
+
+        <p class="signup-form__feedback" data-signup-feedback hidden aria-live="polite"></p>
 
         <div class="signup-page__legal">
           <p>
@@ -357,9 +361,12 @@ const navLinks = [
       const sections = Array.from(document.querySelectorAll("[data-signup-section]"));
       const copies = Array.from(document.querySelectorAll("[data-signup-copy]"));
       const page = document.querySelector("[data-signup-page]");
+      const form = document.querySelector("[data-signup-form]");
       const typeInput = document.querySelector("[data-signup-type-input]");
       const title = document.querySelector("[data-signup-form-title]");
       const submit = document.querySelector("[data-signup-submit]");
+      const feedback = document.querySelector("[data-signup-feedback]");
+      const MAX_TOTAL_UPLOAD_BYTES = 3.5 * 1024 * 1024;
       const typeMeta = {
         model: {
           title: "Model application",
@@ -380,12 +387,26 @@ const navLinks = [
         sections.length === 0 ||
         copies.length === 0 ||
         !(page instanceof HTMLElement) ||
+        !(form instanceof HTMLFormElement) ||
         !(typeInput instanceof HTMLInputElement) ||
         !(title instanceof HTMLElement) ||
-        !(submit instanceof HTMLButtonElement)
+        !(submit instanceof HTMLButtonElement) ||
+        !(feedback instanceof HTMLElement)
       ) {
         return;
       }
+
+      const setFeedback = (message, state) => {
+        feedback.hidden = false;
+        feedback.textContent = message;
+        feedback.dataset.state = state;
+      };
+
+      const clearFeedback = () => {
+        feedback.hidden = true;
+        feedback.textContent = "";
+        delete feedback.dataset.state;
+      };
 
       const applyState = (type) => {
         const currentType = Object.prototype.hasOwnProperty.call(typeMeta, type) ? type : "model";
@@ -421,15 +442,92 @@ const navLinks = [
         typeInput.value = currentType;
         title.textContent = typeMeta[currentType].title;
         submit.textContent = typeMeta[currentType].submit;
+        submit.disabled = false;
       };
 
       tabs.forEach((tab) => {
         tab.addEventListener("click", () => {
           const type = tab.getAttribute("data-signup-tab");
           if (type === "model" || type === "collaboration" || type === "unique") {
+            clearFeedback();
             applyState(type);
           }
         });
+      });
+
+      const queryState = new URLSearchParams(window.location.search);
+      const queryStatus = queryState.get("status");
+      const queryMessage = queryState.get("message");
+
+      if (
+        (queryStatus === "success" || queryStatus === "error") &&
+        typeof queryMessage === "string" &&
+        queryMessage.length > 0
+      ) {
+        setFeedback(queryMessage, queryStatus);
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+
+      form.addEventListener("submit", async (event) => {
+        if (typeof window.fetch !== "function") {
+          return;
+        }
+
+        event.preventDefault();
+        clearFeedback();
+
+        const activeType = page.dataset.signupMode === "collaboration" || page.dataset.signupMode === "unique"
+          ? page.dataset.signupMode
+          : "model";
+        const formData = new FormData(form);
+        let totalUploadBytes = 0;
+
+        formData.forEach((value) => {
+          if (value instanceof File) {
+            totalUploadBytes += value.size;
+          }
+        });
+
+        if (totalUploadBytes > MAX_TOTAL_UPLOAD_BYTES) {
+          setFeedback("The total size of uploaded files must stay under 3.5 MB.", "error");
+          return;
+        }
+
+        const idleLabel = typeMeta[activeType].submit;
+
+        form.setAttribute("aria-busy", "true");
+        submit.disabled = true;
+        submit.textContent = "sending...";
+
+        try {
+          const response = await fetch(form.action, {
+            method: "POST",
+            body: formData,
+            headers: {
+              Accept: "application/json",
+            },
+          });
+
+          const payload = await response.json().catch(() => null);
+
+          if (!response.ok || !payload?.ok) {
+            setFeedback(
+              payload?.message || "Something went wrong while sending your request. Please try again.",
+              "error"
+            );
+            return;
+          }
+
+          setFeedback(payload.message || "Your request has been sent successfully.", "success");
+          form.reset();
+          applyState(activeType);
+        } catch {
+          setFeedback("Something went wrong while sending your request. Please try again.", "error");
+        } finally {
+          form.removeAttribute("aria-busy");
+          submit.disabled = false;
+          submit.textContent = idleLabel;
+        }
       });
 
       applyState("model");
