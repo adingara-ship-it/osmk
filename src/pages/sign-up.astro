@@ -11,13 +11,15 @@ const navLinks = [
 ---
 
 <BaseLayout
+  allowMotion={false}
+  lang="en"
   title="OSMK | Sign Up"
   description="Apply as a model, propose a collaboration, or request a unique sourced piece with OSMK."
 >
   <main class="signup-page" data-signup-page data-signup-mode="model">
     <SiteHeader navLinks={navLinks} />
 
-    <section class="signup-page__hero" data-reveal="up">
+    <section class="signup-page__hero">
       <p class="signup-page__eyebrow">sign up</p>
       <h1>SIGN UP</h1>
       <p class="signup-page__lede">
@@ -26,7 +28,7 @@ const navLinks = [
     </section>
 
     <section class="signup-stage">
-      <div class="signup-page__switch" role="tablist" aria-label="Sign up type" data-reveal="up" style="--reveal-delay: 80ms;">
+      <div class="signup-page__switch" role="tablist" aria-label="Sign up type">
         <button
           class="is-active"
           type="button"
@@ -63,7 +65,7 @@ const navLinks = [
         </button>
       </div>
 
-      <div class="signup-stage__intro" data-reveal="up" style="--reveal-delay: 140ms;">
+      <div class="signup-stage__intro">
         <div class="signup-copy" data-signup-copy="model">
           <p class="signup-copy__eyebrow">be the face of OSMK</p>
           <h2>Model casting</h2>
@@ -112,8 +114,6 @@ const navLinks = [
         method="post"
         action="/api/sign-up"
         enctype="multipart/form-data"
-        data-reveal="up"
-        style="--reveal-delay: 180ms;"
         data-signup-form
       >
         <div class="signup-form__header">
@@ -122,6 +122,14 @@ const navLinks = [
         </div>
 
         <input type="hidden" name="application_type" value="model" data-signup-type-input />
+        <input type="hidden" name="form_started_at" value="" data-signup-started-at />
+
+        <div class="signup-form__honeypot" aria-hidden="true">
+          <label class="signup-field signup-field--full">
+            <span>Company website</span>
+            <input type="text" name="company_website" tabindex="-1" autocomplete="off" />
+          </label>
+        </div>
 
         <div class="signup-form__grid signup-form__grid--base">
           <label class="signup-field">
@@ -179,7 +187,7 @@ const navLinks = [
             </label>
 
             <label class="signup-field signup-field--full">
-              <span>Motivation*</span>
+              <span>Short note / why OSMK*</span>
               <textarea
                 name="motivation"
                 rows="5"
@@ -344,10 +352,10 @@ const navLinks = [
 
         <div class="signup-page__legal">
           <p>
-            En envoyant ce formulaire, vous nous transmettez volontairement des donnees de contact
-            et, selon le cas, des photos ou fichiers pour l'etude de votre demande. Ces elements ne
-            doivent pas etre utilises sans votre accord explicite pour une publication. Consulte les
-            pages legales ci-dessous pour le detail.
+            By sending this form, you voluntarily share contact details and, depending on the
+            request, photos or files so OSMK can review your submission. These materials should not
+            be reused for publication without your explicit agreement. See the legal pages below
+            for details.
           </p>
           <LegalLinks />
         </div>
@@ -363,6 +371,7 @@ const navLinks = [
       const page = document.querySelector("[data-signup-page]");
       const form = document.querySelector("[data-signup-form]");
       const typeInput = document.querySelector("[data-signup-type-input]");
+      const startedAt = document.querySelector("[data-signup-started-at]");
       const title = document.querySelector("[data-signup-form-title]");
       const submit = document.querySelector("[data-signup-submit]");
       const feedback = document.querySelector("[data-signup-feedback]");
@@ -389,6 +398,7 @@ const navLinks = [
         !(page instanceof HTMLElement) ||
         !(form instanceof HTMLFormElement) ||
         !(typeInput instanceof HTMLInputElement) ||
+        !(startedAt instanceof HTMLInputElement) ||
         !(title instanceof HTMLElement) ||
         !(submit instanceof HTMLButtonElement) ||
         !(feedback instanceof HTMLElement)
@@ -406,6 +416,10 @@ const navLinks = [
         feedback.hidden = true;
         feedback.textContent = "";
         delete feedback.dataset.state;
+      };
+
+      const resetStartedAt = () => {
+        startedAt.value = `${Date.now()}`;
       };
 
       const applyState = (type) => {
@@ -475,6 +489,7 @@ const navLinks = [
 
         event.preventDefault();
         clearFeedback();
+        startedAt.value = startedAt.value || `${Date.now()}`;
 
         const activeType = page.dataset.signupMode === "collaboration" || page.dataset.signupMode === "unique"
           ? page.dataset.signupMode
@@ -520,6 +535,7 @@ const navLinks = [
 
           setFeedback(payload.message || "Your request has been sent successfully.", "success");
           form.reset();
+          resetStartedAt();
           applyState(activeType);
         } catch {
           setFeedback("Something went wrong while sending your request. Please try again.", "error");
@@ -530,6 +546,7 @@ const navLinks = [
         }
       });
 
+      resetStartedAt();
       applyState("model");
     })();
   </script>

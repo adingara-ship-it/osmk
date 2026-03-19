@@ -1285,6 +1285,14 @@ html.has-motion .hero__meta {
   -webkit-backdrop-filter: none;
 }
 
+.signup-form__honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
 .signup-form__header {
   display: flex;
   justify-content: space-between;

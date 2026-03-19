@@ -4,7 +4,45 @@ import nodemailer from "nodemailer";
 export const prerender = false;
 
 const DEFAULT_MAIL_TO = "hellocontactosmk@gmail.com";
+const DEFAULT_SUCCESS_MESSAGE = "Your request has been sent successfully.";
+const FORM_HONEYPOT_FIELD = "company_website";
+const FORM_STARTED_AT_FIELD = "form_started_at";
+const MAX_FIELD_LENGTHS = {
+  additional_notes: 1500,
+  age: 3,
+  budget_range: 80,
+  collaboration_role: 120,
+  company_or_project: 140,
+  country: 80,
+  email: 254,
+  full_name: 120,
+  motivation: 2000,
+  phone: 40,
+  piece_deadline: 120,
+  piece_description: 2500,
+  piece_extra_notes: 1500,
+  piece_type: 100,
+  portfolio: 240,
+  preferred_size: 40,
+  project_description: 2500,
+  reference_link: 240,
+  request_country: 80,
+  timeline: 160,
+} as const;
+const MIN_FORM_SUBMIT_DELAY_MS = 2500;
+const MAX_FORM_AGE_MS = 1000 * 60 * 60 * 12;
 const MAX_TOTAL_UPLOAD_BYTES = 3.5 * 1024 * 1024;
+const IMAGE_MIME_TYPES = new Set([
+  "image/avif",
+  "image/heic",
+  "image/heif",
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+]);
+const IMAGE_EXTENSIONS = new Set([".avif", ".heic", ".heif", ".jpeg", ".jpg", ".png", ".webp"]);
+const DOCUMENT_MIME_TYPES = new Set(["application/pdf"]);
+const DOCUMENT_EXTENSIONS = new Set([".pdf"]);
 
 const applicationLabels = {
   collaboration: "Creative collaboration",
@@ -21,6 +59,30 @@ function isApplicationType(value: string): value is ApplicationType {
 function getTextField(formData: FormData, key: string): string {
   const value = formData.get(key);
   return typeof value === "string" ? value.trim() : "";
+}
+
+function normalizeHeaderValue(value: string): string {
+  return value.replace(/[\r\n]+/g, " ").replace(/\s+/g, " ").trim();
+}
+
+function getFileExtension(filename: string): string {
+  const match = /\.[^.]+$/.exec(filename.trim().toLowerCase());
+  return match ? match[0] : "";
+}
+
+function sanitizeFilename(filename: string, fallbackLabel: string, index: number): string {
+  const cleaned = filename
+    .trim()
+    .replace(/[\u0000-\u001f\u007f]+/g, "")
+    .replace(/[\\/:"*?<>|]+/g, "-")
+    .replace(/\s+/g, " ")
+    .slice(0, 120);
+
+  if (cleaned.length > 0) {
+    return cleaned;
+  }
+
+  return `${fallbackLabel}-${index + 1}.bin`;
 }
 
 function escapeHtml(value: string): string {
@@ -103,6 +165,115 @@ function requireFields(formData: FormData, fieldNames: string[]) {
   return missingFields;
 }
 
+function isSameOriginRequest(request: Request): boolean {
+  const requestOrigin = new URL(request.url).origin;
+  const origin = request.headers.get("origin");
+  const referer = request.headers.get("referer");
+
+  if (origin) {
+    return origin === requestOrigin;
+  }
+
+  if (!referer) {
+    return false;
+  }
+
+  try {
+    return new URL(referer).origin === requestOrigin;
+  } catch {
+    return false;
+  }
+}
+
+function validateTextFieldLengths(formData: FormData) {
+  for (const [field, maxLength] of Object.entries(MAX_FIELD_LENGTHS)) {
+    if (getTextField(formData, field).length > maxLength) {
+      return "One or more fields are too long. Please shorten your message and try again.";
+    }
+  }
+
+  return null;
+}
+
+function validateAntiSpamFields(formData: FormData) {
+  if (getTextField(formData, FORM_HONEYPOT_FIELD).length > 0) {
+    return "honeypot_triggered" as const;
+  }
+
+  const startedAt = Number.parseInt(getTextField(formData, FORM_STARTED_AT_FIELD), 10);
+  if (!Number.isFinite(startedAt)) {
+    return "Please reload the form and try again.";
+  }
+
+  const elapsed = Date.now() - startedAt;
+  if (elapsed < MIN_FORM_SUBMIT_DELAY_MS) {
+    return "Please wait a moment before sending the form.";
+  }
+
+  if (elapsed > MAX_FORM_AGE_MS) {
+    return "This form has expired. Please reload the page and try again.";
+  }
+
+  return null;
+}
+
+function fileMatchesRules(
+  file: File,
+  mimeTypes: Set<string>,
+  extensions: Set<string>
+): boolean {
+  const contentType = file.type.trim().toLowerCase();
+  const extension = getFileExtension(file.name);
+  return mimeTypes.has(contentType) || extensions.has(extension);
+}
+
+function validateAttachments(formData: FormData) {
+  const fileRules = [
+    {
+      extensions: IMAGE_EXTENSIONS,
+      field: "headshot",
+      maxFiles: 1,
+      mimeTypes: IMAGE_MIME_TYPES,
+    },
+    {
+      extensions: IMAGE_EXTENSIONS,
+      field: "full_body_picture",
+      maxFiles: 1,
+      mimeTypes: IMAGE_MIME_TYPES,
+    },
+    {
+      extensions: new Set([...IMAGE_EXTENSIONS, ...DOCUMENT_EXTENSIONS]),
+      field: "attachments",
+      maxFiles: 4,
+      mimeTypes: new Set([...IMAGE_MIME_TYPES, ...DOCUMENT_MIME_TYPES]),
+    },
+    {
+      extensions: IMAGE_EXTENSIONS,
+      field: "inspiration_images",
+      maxFiles: 4,
+      mimeTypes: IMAGE_MIME_TYPES,
+    },
+  ] as const;
+
+  for (const rule of fileRules) {
+    const files = formData
+      .getAll(rule.field)
+      .filter((value): value is File => value instanceof File && value.size > 0);
+
+    if (files.length > rule.maxFiles) {
+      return "Too many files were uploaded. Please reduce the number of attachments and try again.";
+    }
+
+    for (const file of files) {
+      if (!fileMatchesRules(file, rule.mimeTypes, rule.extensions)) {
+        return "Only JPG, PNG, WebP, AVIF, HEIC/HEIF, and PDF files are allowed.";
+      }
+    }
+  }
+
+  return null;
+}
+
 async function collectAttachments(formData: FormData) {
   const attachmentDefinitions = [
     { field: "attachments", label: "attachment" },
@@ -130,13 +301,10 @@ async function collectAttachments(formData: FormData) {
         throw new Error("TOTAL_UPLOAD_LIMIT_EXCEEDED");
       }
 
-      const extension = value.name.includes(".") ? "" : ".bin";
-      const filename = `${label}-${index + 1}-${value.name.trim() || `${label}${extension}`}`;
-
       attachments.push({
         content: Buffer.from(await value.arrayBuffer()),
         contentType: value.type || undefined,
-        filename,
+        filename: sanitizeFilename(value.name, label, index),
       });
     }
   }
@@ -195,7 +363,7 @@ function buildSections(applicationType: ApplicationType, formData: FormData) {
       ["Age", getTextField(formData, "age")],
       ["Country", getTextField(formData, "country")],
       ["Instagram or portfolio", getTextField(formData, "portfolio")],
-      ["Motivation", getTextField(formData, "motivation")],
+      ["Short note / why OSMK", getTextField(formData, "motivation")],
     ];
 
     sections.push(formatTextSection("Model details", modelFields));
@@ -238,6 +406,16 @@ function buildSections(applicationType: ApplicationType, formData: FormData) {
 }
 
 function validateRequest(applicationType: ApplicationType, formData: FormData) {
+  const antiSpamError = validateAntiSpamFields(formData);
+  if (antiSpamError) {
+    return antiSpamError;
+  }
+
+  const fieldLengthError = validateTextFieldLengths(formData);
+  if (fieldLengthError) {
+    return fieldLengthError;
+  }
+
   const missingBaseFields = requireFields(formData, ["full_name", "email", "phone"]);
   if (missingBaseFields.length > 0) {
     return "Please fill in all required contact fields.";
@@ -272,13 +450,43 @@ function validateRequest(applicationType: ApplicationType, formData: FormData) {
     }
   }
 
+  const attachmentError = validateAttachments(formData);
+  if (attachmentError) {
+    return attachmentError;
+  }
+
   return null;
 }
 
 export const POST: APIRoute = async ({ request }) => {
   try {
+    const contentType = request.headers.get("content-type")?.toLowerCase() ?? "";
+    if (!contentType.startsWith("multipart/form-data")) {
+      return buildResponse(request, 400, {
+        message: "Invalid form submission.",
+        ok: false,
+        status: "error",
+      });
+    }
+
+    if (!isSameOriginRequest(request)) {
+      return buildResponse(request, 403, {
+        message: "This request origin is not allowed.",
+        ok: false,
+        status: "error",
+      });
+    }
+
     const formData = await request.formData();
     const applicationType = getTextField(formData, "application_type");
+
+    if (getTextField(formData, FORM_HONEYPOT_FIELD).length > 0) {
+      return buildResponse(request, 200, {
+        message: DEFAULT_SUCCESS_MESSAGE,
+        ok: true,
+        status: "success",
+      });
+    }
 
     if (!isApplicationType(applicationType)) {
       return buildResponse(request, 400, {
@@ -302,7 +510,7 @@ export const POST: APIRoute = async ({ request }) => {
     const { mailFrom, mailTo } = getMailMetadata();
     const { html, text } = buildSections(applicationType, formData);
     const senderEmail = getTextField(formData, "email");
-    const senderName = getTextField(formData, "full_name") || "New contact";
+    const senderName = normalizeHeaderValue(getTextField(formData, "full_name")) || "New contact";
 
     await transporter.sendMail({
       attachments,
@@ -313,14 +521,14 @@ export const POST: APIRoute = async ({ request }) => {
           ${html}
         </div>
       `,
-      replyTo: senderEmail,
+      replyTo: normalizeHeaderValue(senderEmail),
       subject: `[OSMK] ${applicationLabels[applicationType]} - ${senderName}`,
       text: `New submission received from the OSMK website.\n\n${text}`,
       to: mailTo,
     });
 
     return buildResponse(request, 200, {
-      message: "Your request has been sent successfully.",
+      message: DEFAULT_SUCCESS_MESSAGE,
       ok: true,
       status: "success",
     });

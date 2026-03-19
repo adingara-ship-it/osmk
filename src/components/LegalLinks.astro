@@ -1,13 +1,26 @@
 ---
 interface Props {
   className?: string;
+  locale?: "en" | "fr";
 }
 
-const { className = "" } = Astro.props;
+const { className = "", locale = "en" } = Astro.props;
 const classes = ["legal-links", className].filter(Boolean).join(" ");
+const labels =
+  locale === "fr"
+    ? {
+        ariaLabel: "Navigation légale",
+        legalNotice: "mentions légales",
+        privacy: "confidentialité",
+      }
+    : {
+        ariaLabel: "Legal navigation",
+        legalNotice: "legal notice",
+        privacy: "privacy policy",
+      };
 ---
 
-<nav class={classes} aria-label="Legal navigation">
-  <a href="/mentions-legales/">mentions legales</a>
-  <a href="/confidentialite/">confidentialite</a>
+<nav class={classes} aria-label={labels.ariaLabel}>
+  <a href="/mentions-legales/">{labels.legalNotice}</a>
+  <a href="/confidentialite/">{labels.privacy}</a>
 </nav>

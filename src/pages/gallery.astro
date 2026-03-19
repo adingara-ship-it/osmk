@@ -7,17 +7,17 @@ const galleryImages = await getGalleryImages();
 const currentYear = new Date().getFullYear();
 ---
 
-<BaseLayout title="OSMK | galerie complete" description="Toutes les photos OSMK.">
+<BaseLayout lang="en" title="OSMK | complete gallery" description="All OSMK photos.">
   <main class="gallery-page">
     <header class="gallery-page__header" data-reveal="up">
-      <a class="gallery-page__back" href="/#gallery">retour a l'accueil</a>
-      <h1>Galerie complete</h1>
+      <a class="gallery-page__back" href="/#gallery">back to home</a>
+      <h1>Complete gallery</h1>
       <p>{galleryImages.length} photos</p>
     </header>
 
     {
       galleryImages.length > 0 ? (
-        <section class="gallery-page__grid" aria-label="Toutes les photos OSMK" data-reveal-group data-reveal-stagger="80">
+        <section class="gallery-page__grid" aria-label="All OSMK photos" data-reveal-group data-reveal-stagger="80">
           {galleryImages.map((name, index) => (
             <figure class="gallery-page__item" data-reveal="scale" data-reveal-item>
               <a
@@ -25,12 +25,13 @@ const currentYear = new Date().getFullYear();
                 href={`/${encodeURI(name)}`}
                 data-gallery-trigger
                 data-gallery-alt={`OSMK photo ${index + 1}`}
-                aria-label={`Afficher la photo ${index + 1} en grand`}
+                aria-label={`Open photo ${index + 1} in full size`}
               >
                 <img
                   src={`/${encodeURI(name)}`}
                   alt={`OSMK photo ${index + 1}`}
                   loading={index < 4 ? "eager" : "lazy"}
+                  decoding="async"
                 />
               </a>
             </figure>
@@ -38,27 +39,27 @@ const currentYear = new Date().getFullYear();
         </section>
       ) : (
         <p class="gallery-page__empty">
-          Ajoute des photos dans <code>public</code> pour alimenter la galerie.
+          Add photos to <code>public</code> to populate the gallery.
         </p>
       )
     }
 
-    <dialog class="gallery-lightbox" data-gallery-lightbox aria-label="Affichage agrandi d'une photo">
+    <dialog class="gallery-lightbox" data-gallery-lightbox aria-label="Expanded photo view">
       <div class="gallery-lightbox__frame">
         <button
           class="gallery-lightbox__close"
           type="button"
           data-gallery-lightbox-close
-          aria-label="Fermer la photo"
+          aria-label="Close photo view"
         >
-          fermer
+          close
         </button>
         <img class="gallery-lightbox__image" data-gallery-lightbox-image src="" alt="" />
       </div>
     </dialog>
 
     <footer class="gallery-page__footer" data-reveal="up">
-      <p>{currentYear} OSMK. Site vitrine creatif.</p>
+      <p>{currentYear} OSMK. Creative portfolio site.</p>
       <LegalLinks />
     </footer>
   </main>

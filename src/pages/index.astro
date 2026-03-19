@@ -21,6 +21,7 @@ const galleryArchiveLabel =
 ---
 
 <BaseLayout
+  lang="en"
   title="OSMK | second hand reimagined"
   description="OSMK, second hand reimagined."
 >
@@ -78,6 +79,7 @@ const galleryArchiveLabel =
               src="/precious.jpeg"
               alt="Portrait for About OSMK section"
               loading="lazy"
+              decoding="async"
             />
           </div>
           <div class="about__media-note" aria-label="About Precious">
@@ -195,7 +197,9 @@ const galleryArchiveLabel =
                     <img
                       src={`/${encodeURI(name)}`}
                       alt={`OSMK gallery image ${index + 1}`}
-                      loading={index < 4 ? "eager" : "lazy"}
+                      loading="lazy"
+                      decoding="async"
+                      fetchpriority="low"
                     />
                   </figure>
                 ))}
@@ -203,7 +207,7 @@ const galleryArchiveLabel =
             </div>
           ) : (
             <p class="gallery__empty">
-              Ajoute des photos dans <code>public</code> pour alimenter la galerie d'accueil.
+              Add photos to <code>public</code> to populate the home gallery.
             </p>
           )
         }
@@ -231,7 +235,13 @@ const galleryArchiveLabel =
 
         <div class="site-footer__bar">
           <a class="site-footer__brand" href="/" aria-label="OSMK home">
-            <img class="site-footer__brand-logo" src="/logo-transparent.png" alt="" loading="lazy" />
+            <img
+              class="site-footer__brand-logo"
+              src="/logo-transparent.png"
+              alt=""
+              loading="lazy"
+              decoding="async"
+            />
             <span>OSMK</span>
           </a>
 
@@ -244,7 +254,7 @@ const galleryArchiveLabel =
           <p class="site-footer__meta">
             {currentYear} OSMK. Curated second hand.
             <span class="site-footer__meta-separator"> · </span>
-            Site cree par
+            Site by
             <a
               class="site-footer__credit"
               href="https://www.instagram.com/aa.webagence/"

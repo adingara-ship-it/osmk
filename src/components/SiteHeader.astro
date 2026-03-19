@@ -6,14 +6,29 @@ interface NavLink {
 }
 
 interface Props {
+  locale?: "en" | "fr";
   navLinks: NavLink[];
 }
 
-const { navLinks } = Astro.props;
+const { locale = "en", navLinks } = Astro.props;
+const labels =
+  locale === "fr"
+    ? {
+        brand: "Accueil OSMK",
+        openMenu: "Ouvrir le menu de navigation",
+        closeMenu: "Fermer le menu de navigation",
+        primaryNavigation: "Navigation principale",
+      }
+    : {
+        brand: "OSMK home",
+        openMenu: "Open navigation menu",
+        closeMenu: "Close navigation menu",
+        primaryNavigation: "Primary navigation",
+      };
 ---
 
 <header class="site-header" data-site-header data-menu-open="false">
-  <a class="site-header__brand" href="/" aria-label="OSMK home">
+  <a class="site-header__brand" href="/" aria-label={labels.brand}>
     <img
       class="site-header__brand-logo"
       src="/logo-transparent.png"
@@ -28,7 +43,9 @@ const { navLinks } = Astro.props;
     type="button"
     aria-controls="site-header-nav"
     aria-expanded="false"
-    aria-label="Open navigation menu"
+    aria-label={labels.openMenu}
+    data-open-label={labels.openMenu}
+    data-close-label={labels.closeMenu}
     data-site-header-toggle
   >
     <span class="site-header__toggle-line"></span>
@@ -39,7 +56,7 @@ const { navLinks } = Astro.props;
   <nav
     class="site-header__nav"
     id="site-header-nav"
-    aria-label="Primary navigation"
+    aria-label={labels.primaryNavigation}
     data-site-header-nav
   >
     {
@@ -73,7 +90,9 @@ const { navLinks } = Astro.props;
         toggle.setAttribute("aria-expanded", nextState ? "true" : "false");
         toggle.setAttribute(
           "aria-label",
-          nextState ? "Close navigation menu" : "Open navigation menu"
+          nextState
+            ? toggle.dataset.closeLabel ?? "Close navigation menu"
+            : toggle.dataset.openLabel ?? "Open navigation menu"
         );
       };
 
