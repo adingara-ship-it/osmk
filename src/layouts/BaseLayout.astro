@@ -1,0 +1,84 @@
+---
+import "../styles/global.css";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = "OSMK",
+  description = "Second hand reimagined",
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#5C1515" />
+    <title>{title}</title>
+    <script is:inline>
+      if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        document.documentElement.classList.add("has-motion");
+      }
+    </script>
+  </head>
+  <body>
+    <slot />
+    <script is:inline>
+      (() => {
+        const root = document.documentElement;
+        if (!root.classList.contains("has-motion")) return;
+
+        const revealElements = Array.from(document.querySelectorAll("[data-reveal]"));
+        const staggerGroups = Array.from(document.querySelectorAll("[data-reveal-group]"));
+
+        staggerGroups.forEach((group) => {
+          if (!(group instanceof HTMLElement)) return;
+
+          const staggerStep = Number.parseInt(group.dataset.revealStagger ?? "90", 10);
+          const revealItems = Array.from(group.querySelectorAll("[data-reveal-item]"));
+
+          revealItems.forEach((item, index) => {
+            if (!(item instanceof HTMLElement)) return;
+            if (item.style.getPropertyValue("--reveal-delay")) return;
+            item.style.setProperty("--reveal-delay", `${Math.max(index, 0) * staggerStep}ms`);
+          });
+        });
+
+        if (!("IntersectionObserver" in window)) {
+          revealElements.forEach((element) => {
+            if (element instanceof HTMLElement) {
+              element.classList.add("is-visible");
+            }
+          });
+          return;
+        }
+
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (!(entry.target instanceof HTMLElement)) return;
+              if (!entry.isIntersecting) return;
+              entry.target.classList.add("is-visible");
+              observer.unobserve(entry.target);
+            });
+          },
+          {
+            threshold: 0.16,
+            rootMargin: "0px 0px -10% 0px",
+          }
+        );
+
+        revealElements.forEach((element) => {
+          if (element instanceof HTMLElement) {
+            observer.observe(element);
+          }
+        });
+      })();
+    </script>
+  </body>
+</html>

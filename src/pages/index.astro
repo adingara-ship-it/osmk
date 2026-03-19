@@ -1,0 +1,264 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import LegalLinks from "../components/LegalLinks.astro";
+import SiteHeader from "../components/SiteHeader.astro";
+import { getGalleryImages, getHomeSliderImages } from "../utils/gallery";
+
+const navLinks = [
+  { href: "#about", label: "about" },
+  { href: "#gallery", label: "gallery" },
+  { href: "/sign-up/", label: "sign up" },
+];
+
+const allGalleryImages = await getGalleryImages();
+const homeSliderImages = await getHomeSliderImages(10);
+const sliderImages = homeSliderImages.length > 0 ? homeSliderImages : allGalleryImages.slice(0, 5);
+const currentYear = new Date().getFullYear();
+const galleryArchiveLabel =
+  allGalleryImages.length === 1
+    ? "1 image in the archive"
+    : `${allGalleryImages.length} images in the archive`;
+---
+
+<BaseLayout
+  title="OSMK | second hand reimagined"
+  description="OSMK, second hand reimagined."
+>
+  <main class="landing-shell">
+    <SiteHeader navLinks={navLinks} />
+
+    <section class="hero snap-section" aria-label="Hero">
+      <picture class="hero__media">
+        <source media="(max-width: 48rem)" srcset="/hero-mobile.jpg" />
+        <img
+          class="hero__image"
+          src="/image-hero.jpg"
+          alt="OSMK hero image"
+          loading="eager"
+          fetchpriority="high"
+        />
+      </picture>
+      <div class="hero__veil" aria-hidden="true"></div>
+      <div class="hero__copy">
+        <div class="hero__copy-inner">
+          <div class="hero__headline-row">
+            <div class="hero__title-stack">
+              <p class="hero__eyebrow">curated second hand</p>
+              <h1 class="hero__title">OSMK</h1>
+            </div>
+
+            <div class="hero__meta">
+              <p class="hero__tagline">second hand reimagined</p>
+              <p class="hero__description">
+                Curated styling, image direction, and one-off secondhand pieces.
+              </p>
+              <div class="hero__actions">
+                <a href="#gallery">view gallery</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="about snap-section" id="about" aria-labelledby="about-title">
+      <div class="about__content">
+        <div class="about__intro" data-reveal="up">
+          <p class="about__eyebrow">about</p>
+          <h2 id="about-title">About OSMK</h2>
+          <p class="about__lead">
+            Ever since I was little, the world of secondhand shopping has been a part of my life.
+            I loved going to thrift stores with my mom, who was the best at finding bargains.
+          </p>
+        </div>
+
+        <div class="about__media-wrap" data-reveal="right" style="--reveal-delay: 120ms;">
+          <div class="about__media">
+            <img
+              src="/precious.jpeg"
+              alt="Portrait for About OSMK section"
+              loading="lazy"
+            />
+          </div>
+          <div class="about__media-note" aria-label="About Precious">
+            <span class="about__media-note-label">Precious</span>
+            <span class="about__media-note-meta">founder, styling and image direction</span>
+          </div>
+        </div>
+
+        <div class="about__body">
+          <blockquote class="about__quote" data-reveal="up" style="--reveal-delay: 80ms;">
+            <span class="about__quote-mark" aria-hidden="true">“</span>
+            <span class="about__quote-text">
+              the super-stylish girl who finds everything at thrift stores
+            </span>
+          </blockquote>
+
+          <div class="about__cards" data-reveal-group data-reveal-stagger="110">
+            <article class="about__card about__card--origins" data-reveal="scale" data-reveal-item>
+              <p class="about__card-index">01</p>
+              <p class="about__card-label">origins</p>
+              <p>
+                Thrift stores were part of my childhood, and I learned to follow trends in my own
+                way before proudly embracing secondhand.
+              </p>
+            </article>
+
+            <article class="about__card about__card--identity" data-reveal="scale" data-reveal-item>
+              <p class="about__card-index">02</p>
+              <p class="about__card-label">identity</p>
+              <p>
+                OSMK comes from our family name minus the letter E, and the apple logo comes from
+                the nickname my mom has always used for me.
+              </p>
+            </article>
+
+            <article
+              class="about__card about__card--vision about__card--wide"
+              data-reveal="scale"
+              data-reveal-item
+            >
+              <p class="about__card-index">03</p>
+              <p class="about__card-label">vision</p>
+              <p>
+                Photography helped me bring silhouettes and emotion to life, and it made one thing
+                clear: the vision matters more than the tool.
+              </p>
+            </article>
+          </div>
+
+          <div class="about__closing" data-reveal="up" style="--reveal-delay: 140ms;">
+            <p class="about__closing-copy">
+              Today, OSMK is my creative outlet. I style, compose, and create using only
+              secondhand pieces. Every look tells a story, and every image is an intention.
+            </p>
+            <div class="about__signoff">
+              <p class="about__signature">Secondhand, reimagined.</p>
+              <p class="about__name">Precious</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="contact-ribbon" aria-label="OSMK contact">
+      <div class="contact-ribbon__inner" data-reveal="up">
+        <a
+          class="contact-ribbon__link"
+          href="https://www.instagram.com/osmk_art/"
+          target="_blank"
+          rel="noreferrer"
+          aria-label="Open OSMK Instagram"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="3.25" y="3.25" width="17.5" height="17.5" rx="5"></rect>
+            <circle cx="12" cy="12" r="4.1"></circle>
+            <circle cx="17.35" cy="6.65" r="1.15" fill="currentColor" stroke="none"></circle>
+          </svg>
+          <span>osmk_art</span>
+        </a>
+
+        <span class="contact-ribbon__separator" aria-hidden="true"></span>
+
+        <a class="contact-ribbon__mail" href="mailto:hellocontactosmk@gmail.com">
+          hellocontactosmk@gmail.com
+        </a>
+      </div>
+    </section>
+
+    <section class="gallery snap-section" id="gallery" aria-labelledby="gallery-title">
+      <div class="gallery__content">
+        <div class="gallery__intro">
+          <div class="gallery__intro-main" data-reveal="up">
+            <p class="gallery__eyebrow">selected edit</p>
+            <h2 id="gallery-title">GALLERY</h2>
+            <p class="gallery__lead">
+              Recent silhouettes, textures, and moments from the OSMK universe.
+            </p>
+          </div>
+
+          <div class="gallery__intro-card" data-reveal="up" style="--reveal-delay: 110ms;">
+            <p class="gallery__intro-card-kicker">{galleryArchiveLabel}</p>
+            <p class="gallery__intro-card-copy">
+              A curated preview from the archive. Open the full gallery for the complete edit.
+            </p>
+            {sliderImages.length > 0 ? <a class="gallery__cta" href="/gallery/">view full gallery</a> : null}
+          </div>
+        </div>
+
+        {
+          sliderImages.length > 0 ? (
+            <div class="gallery__slider" aria-label="OSMK image slider">
+              <div class="gallery__track" data-reveal-group data-reveal-stagger="90">
+                {sliderImages.map((name, index) => (
+                  <figure class="gallery__slide" data-reveal="scale" data-reveal-item>
+                    <img
+                      src={`/${encodeURI(name)}`}
+                      alt={`OSMK gallery image ${index + 1}`}
+                      loading={index < 4 ? "eager" : "lazy"}
+                    />
+                  </figure>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <p class="gallery__empty">
+              Ajoute des photos dans <code>public</code> pour alimenter la galerie d'accueil.
+            </p>
+          )
+        }
+      </div>
+    </section>
+
+    <footer class="site-footer snap-section" aria-labelledby="footer-title">
+      <div class="site-footer__inner">
+        <div class="site-footer__hero">
+          <div class="site-footer__copy" data-reveal="up">
+            <p class="site-footer__eyebrow">next step</p>
+            <h2 id="footer-title">Stay close to the next drop.</h2>
+            <p class="site-footer__lede">
+              Apply as a model, propose a collaboration, or stay connected to the next curated
+              edit.
+            </p>
+          </div>
+
+          <div class="site-footer__card" aria-label="Open call" data-reveal="up" style="--reveal-delay: 120ms;">
+            <p class="site-footer__card-label">open call</p>
+            <p class="site-footer__card-status">apply now</p>
+            <a class="site-footer__card-link" href="/sign-up/">open sign up</a>
+          </div>
+        </div>
+
+        <div class="site-footer__bar" data-reveal="up" style="--reveal-delay: 80ms;">
+          <a class="site-footer__brand" href="/" aria-label="OSMK home">
+            <img class="site-footer__brand-logo" src="/logo-transparent.png" alt="" loading="lazy" />
+            <span>OSMK</span>
+          </a>
+
+          <nav class="site-footer__nav" aria-label="Footer navigation">
+            <a href="#about">about</a>
+            <a href="#gallery">gallery</a>
+            <a href="/sign-up/">sign up</a>
+          </nav>
+
+          <p class="site-footer__meta">
+            {currentYear} OSMK. Curated second hand.
+            <span class="site-footer__meta-separator"> · </span>
+            Site cree par
+            <a
+              class="site-footer__credit"
+              href="https://www.instagram.com/aa.webagence/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              A&A web agence
+            </a>
+          </p>
+
+          <LegalLinks className="site-footer__legal" />
+        </div>
+      </div>
+    </footer>
+
+  </main>
+</BaseLayout>

@@ -1,0 +1,139 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import LegalLinks from "../components/LegalLinks.astro";
+import { getGalleryImages } from "../utils/gallery";
+
+const galleryImages = await getGalleryImages();
+const currentYear = new Date().getFullYear();
+---
+
+<BaseLayout title="OSMK | galerie complete" description="Toutes les photos OSMK.">
+  <main class="gallery-page">
+    <header class="gallery-page__header" data-reveal="up">
+      <a class="gallery-page__back" href="/#gallery">retour a l'accueil</a>
+      <h1>Galerie complete</h1>
+      <p>{galleryImages.length} photos</p>
+    </header>
+
+    {
+      galleryImages.length > 0 ? (
+        <section class="gallery-page__grid" aria-label="Toutes les photos OSMK" data-reveal-group data-reveal-stagger="80">
+          {galleryImages.map((name, index) => (
+            <figure class="gallery-page__item" data-reveal="scale" data-reveal-item>
+              <a
+                class="gallery-page__trigger"
+                href={`/${encodeURI(name)}`}
+                data-gallery-trigger
+                data-gallery-alt={`OSMK photo ${index + 1}`}
+                aria-label={`Afficher la photo ${index + 1} en grand`}
+              >
+                <img
+                  src={`/${encodeURI(name)}`}
+                  alt={`OSMK photo ${index + 1}`}
+                  loading={index < 4 ? "eager" : "lazy"}
+                />
+              </a>
+            </figure>
+          ))}
+        </section>
+      ) : (
+        <p class="gallery-page__empty">
+          Ajoute des photos dans <code>public</code> pour alimenter la galerie.
+        </p>
+      )
+    }
+
+    <dialog class="gallery-lightbox" data-gallery-lightbox aria-label="Affichage agrandi d'une photo">
+      <div class="gallery-lightbox__frame">
+        <button
+          class="gallery-lightbox__close"
+          type="button"
+          data-gallery-lightbox-close
+          aria-label="Fermer la photo"
+        >
+          fermer
+        </button>
+        <img class="gallery-lightbox__image" data-gallery-lightbox-image src="" alt="" />
+      </div>
+    </dialog>
+
+    <footer class="gallery-page__footer" data-reveal="up">
+      <p>{currentYear} OSMK. Site vitrine creatif.</p>
+      <LegalLinks />
+    </footer>
+  </main>
+</BaseLayout>
+
+<script is:inline>
+  (() => {
+    const lightbox = document.querySelector("[data-gallery-lightbox]");
+    const lightboxImage = document.querySelector("[data-gallery-lightbox-image]");
+    const closeButton = document.querySelector("[data-gallery-lightbox-close]");
+    const triggers = Array.from(document.querySelectorAll("[data-gallery-trigger]"));
+
+    if (
+      !(lightbox instanceof HTMLDialogElement) ||
+      !(lightboxImage instanceof HTMLImageElement) ||
+      !(closeButton instanceof HTMLButtonElement)
+    ) {
+      return;
+    }
+
+    const root = document.documentElement;
+
+    const closeLightbox = () => {
+      if (lightbox.open) {
+        lightbox.close();
+      }
+      root.classList.remove("gallery-lightbox-open");
+      lightboxImage.removeAttribute("src");
+      lightboxImage.removeAttribute("alt");
+    };
+
+    const openLightbox = (src, alt) => {
+      lightboxImage.src = src;
+      lightboxImage.alt = alt;
+      if (!lightbox.open) {
+        lightbox.showModal();
+      }
+      root.classList.add("gallery-lightbox-open");
+    };
+
+    triggers.forEach((trigger) => {
+      if (!(trigger instanceof HTMLAnchorElement)) return;
+
+      trigger.addEventListener("click", (event) => {
+        if (
+          event.defaultPrevented ||
+          event.button !== 0 ||
+          event.metaKey ||
+          event.ctrlKey ||
+          event.shiftKey ||
+          event.altKey
+        ) {
+          return;
+        }
+
+        event.preventDefault();
+        openLightbox(
+          trigger.href,
+          trigger.dataset.galleryAlt ?? trigger.querySelector("img")?.alt ?? "OSMK photo"
+        );
+      });
+    });
+
+    closeButton.addEventListener("click", closeLightbox);
+
+    lightbox.addEventListener("click", (event) => {
+      if (event.target === lightbox) {
+        closeLightbox();
+      }
+    });
+
+    lightbox.addEventListener("close", () => {
+      root.classList.remove("gallery-lightbox-open");
+      lightboxImage.removeAttribute("src");
+      lightboxImage.removeAttribute("alt");
+    });
+  })();
+</script>

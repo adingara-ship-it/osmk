@@ -1,0 +1,161 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import LegalLinks from "../components/LegalLinks.astro";
+import SiteHeader from "../components/SiteHeader.astro";
+
+const navLinks = [
+  { href: "/#about", label: "about" },
+  { href: "/#gallery", label: "gallery" },
+  { href: "/sign-up/", label: "sign up" },
+];
+
+const currentYear = new Date().getFullYear();
+---
+
+<BaseLayout
+  title="OSMK | Mentions Legales"
+  description="Mentions legales du site vitrine OSMK."
+>
+  <main class="legal-page">
+    <SiteHeader navLinks={navLinks} />
+
+    <div class="legal-page__inner">
+      <header class="legal-page__hero" data-reveal="up">
+        <a class="legal-page__back" href="/">retour au site</a>
+        <p class="legal-page__eyebrow">information legale</p>
+        <h1>Mentions legales</h1>
+        <p class="legal-page__lead">
+          Cette page est redigee pour la version actuelle du site OSMK, concu comme site vitrine
+          creatif sans vente en ligne ni paiement direct sur le site.
+        </p>
+        <LegalLinks />
+      </header>
+
+      <div class="legal-page__sections">
+        <section class="legal-block" data-reveal="up">
+          <h2>Editeur du site</h2>
+          <dl class="legal-definition">
+            <dt>Nom du site</dt>
+            <dd>OSMK</dd>
+
+            <dt>Responsable / titulaire</dt>
+            <dd>Precious / OSMK</dd>
+
+            <dt>Email</dt>
+            <dd>
+              <a href="mailto:hellocontactosmk@gmail.com">hellocontactosmk@gmail.com</a>
+            </dd>
+
+            <dt>Instagram</dt>
+            <dd>
+              <a href="https://www.instagram.com/osmk_art/" target="_blank" rel="noreferrer">
+                @osmk_art
+              </a>
+            </dd>
+          </dl>
+        </section>
+
+        <section class="legal-block" data-reveal="up">
+          <h2>Nature du site</h2>
+          <p>
+            Le site OSMK a actuellement pour objet de presenter un univers visuel, une galerie de
+            photographies et des prises de contact autour de projets, collaborations ou echanges de
+            services creatifs.
+          </p>
+          <p>
+            En l'etat actuel du site, aucune vente en ligne, aucun paiement et aucun tunnel de
+            commande ne sont proposes.
+          </p>
+        </section>
+
+        <section class="legal-block" data-reveal="up">
+          <h2>Hebergement</h2>
+          <p>
+            Le site est heberge sur <strong>Vercel</strong>.
+          </p>
+          <p>
+            Hebergeur technique : <strong>Vercel Inc.</strong>
+          </p>
+          <p>
+            Adresse de l'hebergeur : <strong>440 N Barranca Ave #4133, Covina, CA 91723, United States</strong>
+          </p>
+          <p>
+            Site de l'hebergeur :
+            <a href="https://vercel.com" target="_blank" rel="noreferrer">vercel.com</a>
+          </p>
+          <p>
+            Contact hebergeur :
+            <a href="mailto:privacy@vercel.com">privacy@vercel.com</a>
+          </p>
+        </section>
+
+        <section class="legal-block" data-reveal="up">
+          <h2>Traitement technique des messages</h2>
+          <p>
+            Les prises de contact et candidatures recues via le formulaire du site sont destinees a
+            OSMK a l'adresse
+            <a href="mailto:hellocontactosmk@gmail.com">hellocontactosmk@gmail.com</a>.
+          </p>
+          <p>
+            Le formulaire pourra etre traite techniquement via <strong>Supabase</strong> une fois
+            le systeme de soumission active en production.
+          </p>
+        </section>
+
+        <section class="legal-block" data-reveal="up">
+          <h2>Propriete intellectuelle</h2>
+          <p>
+            Sauf mention contraire, les textes, photographies, elements visuels, logo, direction
+            artistique et mise en page presents sur ce site sont proteges par les droits de
+            propriete intellectuelle applicables.
+          </p>
+          <p>
+            Toute reproduction, adaptation, republication, extraction ou utilisation, totale ou
+            partielle, sans autorisation prealable ecrite, est interdite sauf dans les cas permis
+            par la loi.
+          </p>
+        </section>
+
+        <section class="legal-block" data-reveal="up">
+          <h2>Droit a l'image</h2>
+          <p>
+            Les photographies mettant en scene des personnes ne doivent pas etre reutilisees sans
+            autorisation. Si vous estimez qu'une image porte atteinte a vos droits, vous pouvez
+            contacter l'editeur du site a l'adresse email ci-dessus.
+          </p>
+        </section>
+
+        <section class="legal-block" data-reveal="up">
+          <h2>Responsabilite</h2>
+          <p>
+            L'editeur s'efforce de fournir des informations aussi exactes que possible, mais ne
+            garantit pas l'absence totale d'erreurs, d'omissions ou d'indisponibilites temporaires.
+          </p>
+          <p>
+            Les liens externes presents sur le site sont fournis a titre informatif. L'editeur
+            n'exerce pas de controle sur leur contenu.
+          </p>
+        </section>
+
+        <section class="legal-block" data-reveal="up">
+          <h2>Credits</h2>
+          <p>
+            Direction artistique et univers OSMK : Precious / OSMK.
+          </p>
+          <p>
+            Site cree par
+            <a href="https://www.instagram.com/aa.webagence/" target="_blank" rel="noreferrer">
+              A&amp;A web agence
+            </a>
+            .
+          </p>
+        </section>
+      </div>
+
+      <footer class="legal-page__footer" data-reveal="up">
+        <p>{currentYear} OSMK. Site vitrine creatif.</p>
+        <LegalLinks />
+      </footer>
+    </div>
+  </main>
+</BaseLayout>

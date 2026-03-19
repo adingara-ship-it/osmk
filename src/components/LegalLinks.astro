@@ -1,0 +1,13 @@
+---
+interface Props {
+  className?: string;
+}
+
+const { className = "" } = Astro.props;
+const classes = ["legal-links", className].filter(Boolean).join(" ");
+---
+
+<nav class={classes} aria-label="Legal navigation">
+  <a href="/mentions-legales/">mentions legales</a>
+  <a href="/confidentialite/">confidentialite</a>
+</nav>

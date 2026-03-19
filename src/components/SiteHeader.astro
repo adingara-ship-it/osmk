@@ -1,0 +1,115 @@
+---
+interface NavLink {
+  current?: boolean;
+  href: string;
+  label: string;
+}
+
+interface Props {
+  navLinks: NavLink[];
+}
+
+const { navLinks } = Astro.props;
+---
+
+<header class="site-header" data-site-header data-menu-open="false">
+  <a class="site-header__brand" href="/" aria-label="OSMK home">
+    <img
+      class="site-header__brand-logo"
+      src="/logo-transparent.png"
+      alt=""
+      loading="eager"
+    />
+    <span>OSMK</span>
+  </a>
+
+  <button
+    class="site-header__toggle"
+    type="button"
+    aria-controls="site-header-nav"
+    aria-expanded="false"
+    aria-label="Open navigation menu"
+    data-site-header-toggle
+  >
+    <span class="site-header__toggle-line"></span>
+    <span class="site-header__toggle-line"></span>
+    <span class="site-header__toggle-line"></span>
+  </button>
+
+  <nav
+    class="site-header__nav"
+    id="site-header-nav"
+    aria-label="Primary navigation"
+    data-site-header-nav
+  >
+    {
+      navLinks.map((link) => (
+        <a href={link.href} aria-current={link.current ? "page" : undefined}>
+          {link.label}
+        </a>
+      ))
+    }
+  </nav>
+</header>
+
+<script is:inline>
+  (() => {
+    const mobileBreakpoint = window.matchMedia("(max-width: 48rem)");
+    const headers = Array.from(document.querySelectorAll("[data-site-header]"));
+
+    headers.forEach((header) => {
+      if (!(header instanceof HTMLElement)) return;
+
+      const toggle = header.querySelector("[data-site-header-toggle]");
+      const nav = header.querySelector("[data-site-header-nav]");
+
+      if (!(toggle instanceof HTMLButtonElement) || !(nav instanceof HTMLElement)) {
+        return;
+      }
+
+      const setMenuState = (isOpen) => {
+        const nextState = mobileBreakpoint.matches && isOpen;
+        header.dataset.menuOpen = nextState ? "true" : "false";
+        toggle.setAttribute("aria-expanded", nextState ? "true" : "false");
+        toggle.setAttribute(
+          "aria-label",
+          nextState ? "Close navigation menu" : "Open navigation menu"
+        );
+      };
+
+      setMenuState(false);
+
+      toggle.addEventListener("click", () => {
+        setMenuState(header.dataset.menuOpen !== "true");
+      });
+
+      nav.querySelectorAll("a").forEach((link) => {
+        link.addEventListener("click", () => {
+          setMenuState(false);
+        });
+      });
+
+      document.addEventListener("click", (event) => {
+        if (!mobileBreakpoint.matches || !(event.target instanceof Node)) return;
+        if (header.contains(event.target)) return;
+        setMenuState(false);
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+          setMenuState(false);
+        }
+      });
+
+      const handleBreakpointChange = () => {
+        setMenuState(false);
+      };
+
+      if (typeof mobileBreakpoint.addEventListener === "function") {
+        mobileBreakpoint.addEventListener("change", handleBreakpointChange);
+      } else {
+        mobileBreakpoint.addListener(handleBreakpointChange);
+      }
+    });
+  })();
+</script>

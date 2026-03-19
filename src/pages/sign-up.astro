@@ -1,0 +1,438 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import LegalLinks from "../components/LegalLinks.astro";
+import SiteHeader from "../components/SiteHeader.astro";
+
+const navLinks = [
+  { href: "/#about", label: "about" },
+  { href: "/#gallery", label: "gallery" },
+  { href: "/sign-up/", label: "sign up", current: true },
+];
+---
+
+<BaseLayout
+  title="OSMK | Sign Up"
+  description="Apply as a model, propose a collaboration, or request a unique sourced piece with OSMK."
+>
+  <main class="signup-page" data-signup-page data-signup-mode="model">
+    <SiteHeader navLinks={navLinks} />
+
+    <section class="signup-page__hero" data-reveal="up">
+      <p class="signup-page__eyebrow">sign up</p>
+      <h1>SIGN UP</h1>
+      <p class="signup-page__lede">
+        Model applications, collaborations, and unique piece requests.
+      </p>
+    </section>
+
+    <section class="signup-stage">
+      <div class="signup-page__switch" role="tablist" aria-label="Sign up type" data-reveal="up" style="--reveal-delay: 80ms;">
+        <button
+          class="is-active"
+          type="button"
+          role="tab"
+          id="signup-tab-model"
+          aria-selected="true"
+          aria-controls="signup-model-panel"
+          data-signup-tab="model"
+        >
+          <span class="signup-page__switch-label">model application</span>
+          <span class="signup-page__switch-meta">casting and images</span>
+        </button>
+        <button
+          type="button"
+          role="tab"
+          id="signup-tab-collaboration"
+          aria-selected="false"
+          aria-controls="signup-collaboration-panel"
+          data-signup-tab="collaboration"
+        >
+          <span class="signup-page__switch-label">collaboration</span>
+          <span class="signup-page__switch-meta">creative proposals</span>
+        </button>
+        <button
+          type="button"
+          role="tab"
+          id="signup-tab-unique"
+          aria-selected="false"
+          aria-controls="signup-unique-panel"
+          data-signup-tab="unique"
+        >
+          <span class="signup-page__switch-label">unique pieces</span>
+          <span class="signup-page__switch-meta">sourcing request</span>
+        </button>
+      </div>
+
+      <div class="signup-stage__intro" data-reveal="up" style="--reveal-delay: 140ms;">
+        <div class="signup-copy" data-signup-copy="model">
+          <p class="signup-copy__eyebrow">be the face of OSMK</p>
+          <h2>Model casting</h2>
+          <p class="signup-copy__lede">
+            Send the essentials first, then the images that help the team review your profile
+            properly.
+          </p>
+          <ul class="signup-copy__list">
+            <li>Full name, email address, phone number</li>
+            <li>Age, country, Instagram or portfolio</li>
+            <li>Headshot, full-body picture, short motivation</li>
+          </ul>
+        </div>
+
+        <div class="signup-copy" data-signup-copy="collaboration" hidden>
+          <p class="signup-copy__eyebrow">start a collaboration</p>
+          <h2>Creative collaboration</h2>
+          <p class="signup-copy__lede">
+            Explain the project clearly, define your role, and attach the references that make the
+            proposal concrete.
+          </p>
+          <ul class="signup-copy__list">
+            <li>Full name, email address, phone number</li>
+            <li>Company, brand, or project context</li>
+            <li>Role, project description, timeline, attachments</li>
+          </ul>
+        </div>
+
+        <div class="signup-copy" data-signup-copy="unique" hidden>
+          <p class="signup-copy__eyebrow">source a one-off</p>
+          <h2>Unique pieces request</h2>
+          <p class="signup-copy__lede">
+            Tell the team what you are looking for and how you want it to feel, so OSMK can source
+            a singular piece around your brief.
+          </p>
+          <ul class="signup-copy__list">
+            <li>Piece type, preferred size, country, and budget</li>
+            <li>Style references, moodboards, links, or inspiration images</li>
+            <li>Deadline, special requests, and sourcing notes</li>
+          </ul>
+        </div>
+      </div>
+
+      <form
+        class="signup-form"
+        method="post"
+        action="#"
+        enctype="multipart/form-data"
+        data-reveal="up"
+        style="--reveal-delay: 180ms;"
+      >
+        <div class="signup-form__header">
+          <p class="signup-form__kicker" data-signup-form-title>Model application</p>
+          <p class="signup-form__required">Required fields are marked with *</p>
+        </div>
+
+        <input type="hidden" name="application_type" value="model" data-signup-type-input />
+
+        <div class="signup-form__grid signup-form__grid--base">
+          <label class="signup-field">
+            <span>Full name*</span>
+            <input type="text" name="full_name" autocomplete="name" required />
+          </label>
+
+          <label class="signup-field">
+            <span>Email address*</span>
+            <input type="email" name="email" autocomplete="email" required />
+          </label>
+
+          <label class="signup-field signup-field--full">
+            <span>Phone number*</span>
+            <input type="tel" name="phone" autocomplete="tel" required />
+          </label>
+        </div>
+
+        <section
+          class="signup-form__section"
+          id="signup-model-panel"
+          role="tabpanel"
+          aria-labelledby="signup-tab-model"
+          data-signup-section="model"
+        >
+          <div class="signup-form__section-head">
+            <p class="signup-form__section-kicker">model details</p>
+            <h3>Profile and images</h3>
+          </div>
+
+          <div class="signup-form__grid">
+            <label class="signup-field">
+              <span>Age*</span>
+              <input type="number" name="age" min="16" required />
+            </label>
+
+            <label class="signup-field">
+              <span>Country*</span>
+              <input type="text" name="country" autocomplete="country-name" required />
+            </label>
+
+            <label class="signup-field signup-field--full">
+              <span>Instagram or portfolio</span>
+              <input type="text" name="portfolio" placeholder="@yourhandle or website" />
+            </label>
+
+            <label class="signup-field">
+              <span>Headshot*</span>
+              <input type="file" name="headshot" accept="image/*" required />
+            </label>
+
+            <label class="signup-field">
+              <span>Full-body picture*</span>
+              <input type="file" name="full_body_picture" accept="image/*" required />
+            </label>
+
+            <label class="signup-field signup-field--full">
+              <span>Motivation*</span>
+              <textarea
+                name="motivation"
+                rows="5"
+                placeholder="Tell us why you want to be part of the OSMK shoot."
+                required
+              ></textarea>
+            </label>
+          </div>
+        </section>
+
+        <section
+          class="signup-form__section"
+          id="signup-collaboration-panel"
+          role="tabpanel"
+          aria-labelledby="signup-tab-collaboration"
+          data-signup-section="collaboration"
+          hidden
+        >
+          <div class="signup-form__section-head">
+            <p class="signup-form__section-kicker">project details</p>
+            <h3>Context and proposal</h3>
+          </div>
+
+          <div class="signup-form__grid">
+            <label class="signup-field signup-field--full">
+              <span>Company / Brand / Project name</span>
+              <input type="text" name="company_or_project" />
+            </label>
+
+            <label class="signup-field signup-field--full">
+              <span>Role / Type of collaboration*</span>
+              <input
+                type="text"
+                name="collaboration_role"
+                placeholder="Photographer, stylist, model, brand, creative partner..."
+                required
+              />
+            </label>
+
+            <label class="signup-field signup-field--full">
+              <span>Project description*</span>
+              <textarea
+                name="project_description"
+                rows="5"
+                placeholder="Describe your idea, concept, or what you would like to collaborate on."
+                required
+              ></textarea>
+            </label>
+
+            <label class="signup-field signup-field--full">
+              <span>Proposed timeline</span>
+              <input
+                type="text"
+                name="timeline"
+                placeholder="Start date, deadlines, event dates..."
+              />
+            </label>
+
+            <label class="signup-field signup-field--full">
+              <span>Attachments / Inspiration</span>
+              <input type="file" name="attachments" accept="image/*,.pdf" multiple />
+            </label>
+
+            <label class="signup-field signup-field--full">
+              <span>Additional notes</span>
+              <textarea
+                name="additional_notes"
+                rows="4"
+                placeholder="Anything else you want to share."
+              ></textarea>
+            </label>
+          </div>
+        </section>
+
+        <section
+          class="signup-form__section"
+          id="signup-unique-panel"
+          role="tabpanel"
+          aria-labelledby="signup-tab-unique"
+          data-signup-section="unique"
+          hidden
+        >
+          <div class="signup-form__section-head">
+            <p class="signup-form__section-kicker">request details</p>
+            <h3>Brief and sourcing notes</h3>
+          </div>
+
+          <div class="signup-form__grid">
+            <label class="signup-field">
+              <span>Country</span>
+              <input type="text" name="request_country" autocomplete="country-name" />
+            </label>
+
+            <label class="signup-field">
+              <span>Type of piece*</span>
+              <input
+                type="text"
+                name="piece_type"
+                placeholder="Jacket, jeans, suit, bag..."
+                required
+              />
+            </label>
+
+            <label class="signup-field">
+              <span>Preferred size*</span>
+              <input type="text" name="preferred_size" placeholder="S, M, L..." required />
+            </label>
+
+            <label class="signup-field">
+              <span>Budget range</span>
+              <input type="text" name="budget_range" placeholder="EUR49 - EUR150" />
+            </label>
+
+            <label class="signup-field signup-field--full">
+              <span>Describe your piece*</span>
+              <textarea
+                name="piece_description"
+                rows="5"
+                placeholder="Style, vibe, references, fabric, details..."
+                required
+              ></textarea>
+            </label>
+
+            <label class="signup-field signup-field--full">
+              <span>Inspiration images</span>
+              <input type="file" name="inspiration_images" accept="image/*" multiple />
+            </label>
+
+            <label class="signup-field">
+              <span>Deadline</span>
+              <input
+                type="text"
+                name="piece_deadline"
+                placeholder="If you need the piece by a certain date"
+              />
+            </label>
+
+            <label class="signup-field">
+              <span>Instagram or moodboard link</span>
+              <input type="text" name="reference_link" placeholder="@handle or link" />
+            </label>
+
+            <label class="signup-field signup-field--full">
+              <span>Anything else</span>
+              <textarea
+                name="piece_extra_notes"
+                rows="4"
+                placeholder="Extra details or special requests."
+              ></textarea>
+            </label>
+          </div>
+        </section>
+
+        <div class="signup-form__actions">
+          <button class="signup-form__submit" type="submit" data-signup-submit>
+            submit application
+          </button>
+        </div>
+
+        <div class="signup-page__legal">
+          <p>
+            En envoyant ce formulaire, vous nous transmettez volontairement des donnees de contact
+            et, selon le cas, des photos ou fichiers pour l'etude de votre demande. Ces elements ne
+            doivent pas etre utilises sans votre accord explicite pour une publication. Consulte les
+            pages legales ci-dessous pour le detail.
+          </p>
+          <LegalLinks />
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <script is:inline>
+    (() => {
+      const tabs = Array.from(document.querySelectorAll("[data-signup-tab]"));
+      const sections = Array.from(document.querySelectorAll("[data-signup-section]"));
+      const copies = Array.from(document.querySelectorAll("[data-signup-copy]"));
+      const page = document.querySelector("[data-signup-page]");
+      const typeInput = document.querySelector("[data-signup-type-input]");
+      const title = document.querySelector("[data-signup-form-title]");
+      const submit = document.querySelector("[data-signup-submit]");
+      const typeMeta = {
+        model: {
+          title: "Model application",
+          submit: "submit application",
+        },
+        collaboration: {
+          title: "Collaboration",
+          submit: "send collaboration",
+        },
+        unique: {
+          title: "Unique pieces request",
+          submit: "send request",
+        },
+      };
+
+      if (
+        tabs.length === 0 ||
+        sections.length === 0 ||
+        copies.length === 0 ||
+        !(page instanceof HTMLElement) ||
+        !(typeInput instanceof HTMLInputElement) ||
+        !(title instanceof HTMLElement) ||
+        !(submit instanceof HTMLButtonElement)
+      ) {
+        return;
+      }
+
+      const applyState = (type) => {
+        const currentType = Object.prototype.hasOwnProperty.call(typeMeta, type) ? type : "model";
+
+        tabs.forEach((tab) => {
+          const isActive = tab.getAttribute("data-signup-tab") === currentType;
+          tab.classList.toggle("is-active", isActive);
+          tab.setAttribute("aria-selected", isActive ? "true" : "false");
+        });
+
+        sections.forEach((section) => {
+          const isActive = section.getAttribute("data-signup-section") === currentType;
+          section.hidden = !isActive;
+          section
+            .querySelectorAll("input, textarea, select, button")
+            .forEach((field) => {
+              if (
+                field instanceof HTMLInputElement ||
+                field instanceof HTMLTextAreaElement ||
+                field instanceof HTMLSelectElement ||
+                field instanceof HTMLButtonElement
+              ) {
+                field.disabled = !isActive;
+              }
+            });
+        });
+
+        copies.forEach((copy) => {
+          copy.hidden = copy.getAttribute("data-signup-copy") !== currentType;
+        });
+
+        page.dataset.signupMode = currentType;
+        typeInput.value = currentType;
+        title.textContent = typeMeta[currentType].title;
+        submit.textContent = typeMeta[currentType].submit;
+      };
+
+      tabs.forEach((tab) => {
+        tab.addEventListener("click", () => {
+          const type = tab.getAttribute("data-signup-tab");
+          if (type === "model" || type === "collaboration" || type === "unique") {
+            applyState(type);
+          }
+        });
+      });
+
+      applyState("model");
+    })();
+  </script>
+</BaseLayout>

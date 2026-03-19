@@ -1,0 +1,182 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import LegalLinks from "../components/LegalLinks.astro";
+import SiteHeader from "../components/SiteHeader.astro";
+
+const navLinks = [
+  { href: "/#about", label: "about" },
+  { href: "/#gallery", label: "gallery" },
+  { href: "/sign-up/", label: "sign up" },
+];
+
+const currentYear = new Date().getFullYear();
+---
+
+<BaseLayout
+  title="OSMK | Confidentialite"
+  description="Politique de confidentialite du site vitrine OSMK."
+>
+  <main class="legal-page">
+    <SiteHeader navLinks={navLinks} />
+
+    <div class="legal-page__inner">
+      <header class="legal-page__hero" data-reveal="up">
+        <a class="legal-page__back" href="/">retour au site</a>
+        <p class="legal-page__eyebrow">protection des donnees</p>
+        <h1>Politique de confidentialite</h1>
+        <p class="legal-page__lead">
+          Cette politique decrit le traitement des donnees personnelles collectees sur la version
+          actuelle du site vitrine OSMK.
+        </p>
+        <LegalLinks />
+      </header>
+
+      <div class="legal-page__sections">
+        <section class="legal-block" data-reveal="up">
+          <h2>Responsable du traitement</h2>
+          <p>Responsable du traitement : <strong>OSMK / Precious</strong></p>
+          <p>
+            Email de contact :
+            <a href="mailto:hellocontactosmk@gmail.com">hellocontactosmk@gmail.com</a>
+          </p>
+        </section>
+
+        <section class="legal-block" data-reveal="up">
+          <h2>Donnees susceptibles d'etre collectees</h2>
+          <ul>
+            <li>donnees de contact : nom, email, pays et autres informations envoyees volontairement ;</li>
+            <li>donnees liees aux demandes : role, projet, description, budget, delais ;</li>
+            <li>liens vers reseaux sociaux, portfolio ou moodboard ;</li>
+            <li>fichiers transmis volontairement : photos, images, PDF et autres pieces jointes ;</li>
+            <li>donnees techniques strictement necessaires au fonctionnement du site et a sa securite.</li>
+          </ul>
+          <p>
+            En l'etat actuel du site, aucun paiement n'est effectue en ligne et aucune commande
+            n'est passee sur le site.
+          </p>
+        </section>
+
+        <section class="legal-block" data-reveal="up">
+          <h2>Finalites du traitement</h2>
+          <ul>
+            <li>etudier une candidature modele ;</li>
+            <li>etudier une proposition de collaboration ;</li>
+            <li>etudier une demande de sourcing ou de piece unique ;</li>
+            <li>repondre a une prise de contact et organiser un echange de service creatif ;</li>
+            <li>assurer la securite technique et la bonne administration du site.</li>
+          </ul>
+        </section>
+
+        <section class="legal-block" data-reveal="up">
+          <h2>Base juridique</h2>
+          <p>
+            Le traitement repose, selon la nature de votre demarche, sur votre demande volontaire
+            de prise de contact et, lorsque cela est pertinent, sur des mesures precontractuelles
+            prises a votre initiative.
+          </p>
+          <p>
+            Pour les photos, fichiers et informations que vous choisissez d'envoyer, le traitement
+            repose egalement sur votre transmission volontaire de ces elements afin d'etudier votre
+            demande.
+          </p>
+        </section>
+
+        <section class="legal-block" data-reveal="up">
+          <h2>Destinataires</h2>
+          <p>
+            Les donnees sont destinees a OSMK et, selon la configuration technique du site, aux
+            prestataires strictement necessaires a son fonctionnement et au traitement des messages.
+          </p>
+          <ul>
+            <li>hebergement du site : Vercel ;</li>
+            <li>boite de reception des demandes : hellocontactosmk@gmail.com ;</li>
+            <li>traitement technique prevu du formulaire et des soumissions : Supabase, une fois la connexion activee.</li>
+          </ul>
+          <p>Les donnees ne sont pas revendues.</p>
+        </section>
+
+        <section class="legal-block" data-reveal="up">
+          <h2>Duree de conservation</h2>
+          <p>
+            Les donnees sont conservees pendant le temps necessaire au traitement de votre demande,
+            puis pendant une duree raisonnable de suivi administratif.
+          </p>
+          <p>
+            A defaut de relation suivie, il est recommande de ne pas conserver les candidatures et
+            prises de contact plus longtemps que necessaire. Cette duree doit etre confirmee et
+            completee avant mise en ligne definitive.
+          </p>
+        </section>
+
+        <section class="legal-block" data-reveal="up">
+          <h2>Photos, fichiers et droit a l'image</h2>
+          <p>
+            Les images et fichiers transmis via le formulaire sont destines a l'evaluation de votre
+            demande. Leur envoi ne vaut pas, a lui seul, autorisation generale de publication.
+          </p>
+          <p>
+            Toute reutilisation publique, diffusion ou publication de photos de personnes devrait
+            faire l'objet d'un accord distinct, explicite et idealement ecrit.
+          </p>
+          <p>
+            Si vous envoyez des fichiers, vous confirmez disposer des droits necessaires pour les
+            transmettre. Si vous etes mineur ou si la situation l'exige, une autorisation du
+            representant legal pourra etre demandee avant toute utilisation.
+          </p>
+        </section>
+
+        <section class="legal-block" data-reveal="up">
+          <h2>Cookies</h2>
+          <p>
+            En l'etat actuel du site et a notre connaissance, aucun cookie non essentiel de mesure
+            d'audience, publicitaire ou de suivi tiers n'est intentionnellement deploye.
+          </p>
+          <p>
+            Si des outils d'analyse, de suivi ou des contenus tiers sont ajoutes plus tard, cette
+            politique devra etre mise a jour et un mecanisme de consentement pourra devenir
+            necessaire.
+          </p>
+        </section>
+
+        <section class="legal-block" data-reveal="up">
+          <h2>Hebergement et flux de transmission</h2>
+          <p>
+            Le site est heberge sur Vercel. Si le formulaire est connecte a Supabase comme prevu,
+            certaines donnees pourront transiter par cette infrastructure technique avant
+            transmission ou traitement par OSMK.
+          </p>
+          <p>
+            L'adresse de reception des prises de contact indiquee par OSMK est
+            <a href="mailto:hellocontactosmk@gmail.com">hellocontactosmk@gmail.com</a>.
+          </p>
+        </section>
+
+        <section class="legal-block" data-reveal="up">
+          <h2>Vos droits</h2>
+          <p>
+            Sous reserve des conditions prevues par la loi, vous pouvez demander l'acces a vos
+            donnees, leur rectification, leur effacement, la limitation du traitement, ou vous
+            opposer au traitement selon les cas applicables.
+          </p>
+          <p>
+            Pour exercer vos droits, vous pouvez ecrire a
+            <a href="mailto:hellocontactosmk@gmail.com">hellocontactosmk@gmail.com</a>.
+          </p>
+          <p>
+            Vous pouvez egalement introduire une plainte aupres de l'Autorite de protection des
+            donnees :
+            <a href="https://www.autoriteprotectiondonnees.be" target="_blank" rel="noreferrer">
+              autoriteprotectiondonnees.be
+            </a>
+            .
+          </p>
+        </section>
+      </div>
+
+      <footer class="legal-page__footer" data-reveal="up">
+        <p>{currentYear} OSMK. Politique a relire a chaque evolution du site.</p>
+        <LegalLinks />
+      </footer>
+    </div>
+  </main>
+</BaseLayout>
